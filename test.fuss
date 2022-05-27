@@ -1,0 +1,26 @@
+static func num f(num a, num b, str c)[
+	serve a+b+c
+]
+
+static macro num a 10
+
+f(1,    2  , "abc")
+
+"abc"
+"abc def"
+"abc + def"
+
+1+*"abc
+ "I forgot a quote
+ "def
+ "*
+
+f(1,2,"3")
+
+f(1,2,"1")
+
+2 + 2
+
+2 + ~ 1
+
+2 + 2
