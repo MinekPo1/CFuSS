@@ -504,7 +504,7 @@ namespace Parser{
 	struct ParseResult{
 		std::vector<Element> elements;
 		std::vector<ParserError> errors;
-		bool successfull;
+		bool successful;
 	};
 
 	ValType get_type(std::string type){
@@ -524,7 +524,7 @@ namespace Parser{
 
 	ParseResult _parse(std::vector<Element> elements){
 		std::vector<ParserError> errors;
-		bool successfull = true;
+		bool successful = true;
 
 		bool did_something;
 		do{
@@ -590,7 +590,7 @@ namespace Parser{
 									// if it is not create an error
 									ParserError error = {elements[i].line, "Expected closing quote"};
 									errors.push_back(error);
-									successfull = false;
+									successful = false;
 									// remove the quote token and the token which would be the content of the string
 									elements.erase(elements.begin()+i, elements.begin()+j+1);
 									did_something = true;
@@ -659,7 +659,7 @@ namespace Parser{
 									{
 										ParserError error = {elements[j].line, "Expected closing multiline string"};
 										errors.push_back(error);
-										successfull = false;
+										successful = false;
 										// remove the quote token and the token which would be the content of the string
 										elements.erase(elements.begin()+i+1, elements.begin()+j+1);
 										Element error_element = {ELEMENT_ERROR, elements[j].line, "<ERROR>", "", 0};
@@ -668,7 +668,7 @@ namespace Parser{
 									else{
 										ParserError error = {elements[j].line, "Multiline string continuation missing"};
 										errors.push_back(error);
-										successfull = false;
+										successful = false;
 										// remove the quote token and the token which would be the content of the string
 										elements.erase(elements.begin()+i+1, elements.begin()+k+1);
 										// place an error element
@@ -691,7 +691,7 @@ namespace Parser{
 							{
 								ParserError error = {elements[i].line, "Unexpected closing multiline string"};
 								errors.push_back(error);
-								successfull = false;
+								successful = false;
 								// remove the quote token
 								elements.erase(elements.begin()+i);
 							}
@@ -705,7 +705,7 @@ namespace Parser{
 										ParserError error = {elements[i].line, "Unexpected operator"};
 										errors.push_back(error);
 										elements.erase(elements.begin()+i);
-										successfull = false;
+										successful = false;
 										break;
 									}
 									if (elements[i-1].type == ELEMENT_TOKEN){
@@ -718,7 +718,7 @@ namespace Parser{
 											errors.push_back(error);
 											// remove the token
 											elements.erase(elements.begin()+i);
-											successfull = false;
+											successful = false;
 											break;
 										}
 										if (elements[i-1].data.token->type == Lexer::TOKEN_OPERATOR and elements[i-1].data.token->value != "@"){
@@ -728,7 +728,7 @@ namespace Parser{
 											errors.push_back(error);
 											// remove the token
 											elements.erase(elements.begin()+i+1);
-											successfull = false;
+											successful = false;
 											break;
 										}
 									}
@@ -756,7 +756,7 @@ namespace Parser{
 										ParserError error = {elements[i].line, "EOF while looking for operands"};
 										errors.push_back(error);
 										elements.erase(elements.begin()+i);
-										successfull = false;
+										successful = false;
 										break;
 									}
 									if (elements[i+1].type == ELEMENT_TOKEN){
@@ -765,7 +765,7 @@ namespace Parser{
 											ParserError error = {elements[i].line, "Unexpected operator (expected operand after operator)"};
 											errors.push_back(error);
 											elements.erase(elements.begin()+i);
-											successfull = false;
+											successful = false;
 											break;
 										}
 										if (elements[i+1].data.token->type == Lexer::TOKEN_OPERATOR and elements[i+1].data.token->value != "~"){
@@ -777,7 +777,7 @@ namespace Parser{
 											}
 											errors.push_back(error);
 											elements.erase(elements.begin()+i+1);
-											successfull = false;
+											successful = false;
 											break;
 										}
 									}
@@ -833,7 +833,7 @@ namespace Parser{
 										// error
 										ParserError error = {elements[i].line, "Missing closing bracket"};
 										errors.push_back(error);
-										successfull = false;
+										successful = false;
 										break;
 									}
 									// construct the new element
@@ -851,7 +851,7 @@ namespace Parser{
 												// syntax error
 												ParserError error = {elements[i].line, "Unexpected comma, expected expression"};
 												errors.push_back(error);
-												successfull = false;
+												successful = false;
 												a_error = true;
 												break;
 											}
@@ -907,7 +907,7 @@ namespace Parser{
 										// syntax error
 										ParserError error = {elements[i].line, "\"static\" keyword has to be followed by \"macro\", \"function\", \"structure\" or \"namespace\" keyword"};
 										errors.push_back(error);
-										successfull = false;
+										successful = false;
 										break;
 									}
 									else;
@@ -960,7 +960,7 @@ namespace Parser{
 											{
 												elements.erase(elements.begin()+i);
 											}
-											successfull = false;
+											successful = false;
 											break;
 										}
 										// get the body
@@ -986,8 +986,8 @@ namespace Parser{
 											ParserError error = {elements[i].line, "Macro declaration must have a single statement in the body"};
 											errors.push_back(error);
 										}
-										if (not res.successfull){
-											successfull = false;
+										if (not res.successful){
+											successful = false;
 											// clean up
 											for (int j = i+1; j <= last_good; j++)
 											{
@@ -1146,7 +1146,7 @@ namespace Parser{
 		}
 		while(did_something);
 
-		return {elements, errors, successfull};
+		return {elements, errors, successful};
 	}
 
 	ParseResult _parse(std::vector<Lexer::Token> tokens){
@@ -1242,7 +1242,7 @@ int main(int argc, char *argv[]){
 	Parser::ParseResult res = Parser::_parse(tokens);
 	std::vector<Parser::Element> elements = res.elements;
 
-	if (!res.successfull){
+	if (!res.successful){
 		std::vector<std::string> lines = split_string(code, "\n");
 		// show the errors
 		for (Parser::ParserError error : res.errors){
